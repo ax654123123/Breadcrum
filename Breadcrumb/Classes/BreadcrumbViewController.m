@@ -184,7 +184,9 @@
     // create the container view which we will use for flip animation (centered horizontally)
 	_containerView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:self.containerView];
-    
+    CGRect rec = self.map.frame;
+    rec.size.height = self.view.frame.size.height - 180;
+    self.map.frame = rec;
     [self.containerView addSubview:self.map];
     
     self.downView.frame = CGRectMake(0, self.map.frame.size.height, self.downView.frame.size.width, self.downView.frame.size.height);
@@ -206,10 +208,10 @@
     
     UIButton* lintButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [lintButton setTitle:@"地图" forState:UIControlStateNormal];
-    lintButton.frame = CGRectMake(0, 20, 60, 40);
+    lintButton.frame = CGRectMake(0, 10, 60, 40);
     self.leftButton = lintButton;
 	[lintButton addTarget:self action:@selector(drawSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [[UIApplication sharedApplication].keyWindow addSubview:lintButton];
+    [self.view addSubview:lintButton];
 //	UIBarButtonItem *lintButtonItem = [[UIBarButtonItem alloc] initWithCustomView:lintButton];
 //	self.navigationItem.leftBarButtonItem = lintButtonItem;
     
@@ -561,7 +563,7 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     distance  = [self distanceFromPointX:[self.map convertCoordinate:min toPointToView:self.imageView] distanceToPointY:[self.map convertCoordinate:max toPointToView:self.imageView]];
     NSLog(@"Distance is %f",distance);
     
-    if (distance < 32) {
+    if (distance < 50) {
         
         self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat lastObject] floatValue], [[self.mutableArraryLog lastObject] floatValue])];
     }else{

@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/BreadcrumbViewController.m"
-         timestampString = "399801626.11286"
+         timestampString = "399867059.948205"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "515"
-         endingLineNumber = "515"
+         startingLineNumber = "517"
+         endingLineNumber = "517"
          landmarkName = "-touchEnded:withEvent:"
          landmarkType = "5">
       </FileBreakpoint>
