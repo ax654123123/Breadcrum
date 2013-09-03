@@ -1,0 +1,23 @@
+//
+// Prefix header for all source files of the 'Breadcrumb' target in the 'Breadcrumb' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+    #import "RTNetwork.h"
+    #import "RTApiProxy.h"
+    #import "RTCoreService.h"
+    #import <QuartzCore/QuartzCore.h>
+#import "BreadcrumbAppDelegate.h"
+#import "MKMapView+ZoomLevel.h"
+#endif
+//版本比较
+#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
+#define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+
+//Screen Size
+#define CGRect_FULLSCREEN [[UIScreen mainScreen] bounds]
