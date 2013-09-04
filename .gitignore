@@ -1,0 +1,13 @@
+.DS_Store
+*.swp
+.idea/
+build/
+*.pbxuser
+*.perspective
+*.perspectivev3
+xcuserdata
+*.mode1v3
+*.mode2v3
+AnjukeHD.xcodeproj/project.xcworkspace/xcuserdata/casa.xcuserdatad/UserInterfaceState.xcuserstate
+AnjukeHD.xcodeproj/project.xcworkspace/xcshareddata/
+AnjukeHD.xcodeproj/project.xcworkspace/xcuserdata/xuchao.xcuserdatad/UserInterfaceState.xcuserstate
