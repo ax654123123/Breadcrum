@@ -74,44 +74,44 @@
     MKMapRect clipRect = MKMapRectInset(mapRect, -lineWidth, -lineWidth);
     
     [crumbs lockForReading];
-    _path = [self newPathForPoints:crumbs.points
+    CGPathRef path = [self newPathForPoints:crumbs.points
                                     pointCount:crumbs.pointCount
                                       clipRect:clipRect
                                      zoomScale:zoomScale];
-    CGPathRef path1 = [self newPathForPoints:crumbs.points
-                                  pointCount:crumbs.pointCount
-                                    clipRect:clipRect
-                                   zoomScale:zoomScale];
+//    CGPathRef path1 = [self newPathForPoints:crumbs.points
+//                                  pointCount:crumbs.pointCount
+//                                    clipRect:clipRect
+//                                   zoomScale:zoomScale];
     [crumbs unlockForReading];
     
-    if (_path != nil)
+    if (path != nil)
     {
-        CGContextAddPath(context, _path);
+        CGContextAddPath(context, path);
         
-        CGContextSetRGBStrokeColor(context, 0.0f, 0.0f, 1.0f, 0.5f);
+        CGContextSetRGBStrokeColor(context, 60.0f/255, 130/255.0f, 4/255.0f, 0.55f);
         CGContextSetLineJoin(context, kCGLineJoinRound);
         CGContextSetLineCap(context, kCGLineCapRound);
         CGContextSetLineWidth(context, lineWidth*3);
         CGContextSetRGBFillColor(context, 0.0f, 1.0f, 1.0f, 0.2f);
         CGContextStrokePath(context);  
-        CGPathRelease(_path);
+        CGPathRelease(path);
     }
 
-    if (path1 != nil)
-    {
-        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
-        
-        if (delegate.isBiHe) {
-            return;
-        }
-        CGContextAddPath(context, path1);
-        CGContextSetRGBStrokeColor(context, 0.0f, 0.0f, 1.0f, 0.2f);
-        CGContextSetLineJoin(context, kCGLineJoinRound);
-        CGContextSetLineCap(context, kCGLineCapRound);
-        CGContextSetLineWidth(context, lineWidth*16);
-        CGContextStrokePath(context);
-        CGPathRelease(path1);    
-    }
+//    if (path1 != nil)
+//    {
+//        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
+//        
+//        if (delegate.isBiHe) {
+//            return;
+//        }
+//        CGContextAddPath(context, path1);
+//        CGContextSetRGBStrokeColor(context, 0.0f, 0.0f, 1.0f, 0.2f);
+//        CGContextSetLineJoin(context, kCGLineJoinRound);
+//        CGContextSetLineCap(context, kCGLineCapRound);
+//        CGContextSetLineWidth(context, lineWidth*16);
+//        CGContextStrokePath(context);
+//        CGPathRelease(path1);    
+//    }
 }
 
 @end

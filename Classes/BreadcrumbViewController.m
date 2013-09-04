@@ -7,6 +7,7 @@
 #import "MKMapView+ZoomLevel.h"
 #import "BigMapAnnotation.h"
 #import "UIUtil.h"
+#import "CommViewController.h"
 
 @interface BreadcrumbViewController()
 
@@ -44,6 +45,7 @@
 @property (nonatomic, assign) BOOL drawEnable;
 @property (strong, nonatomic) IBOutlet UIView *downView;
 @property (nonatomic, strong) MKPolygon *polygon;
+@property (nonatomic, strong) MKPolyline *polyline;
 
 @property (nonatomic, assign) float min_lat;
 @property (nonatomic, assign) float max_lat;
@@ -51,7 +53,7 @@
 @property (nonatomic, assign) float max_lng;
 
 - (IBAction)toggleBestAccuracy:(id)sender;
-
+- (IBAction)tanchu:(id)sender;
 @end
 
 
@@ -69,7 +71,7 @@
     if (_imageView == nil) {
         _imageView = [[DrawLinesView alloc] initWithFrame:CGRectMake(0, 0, self.map.frame.size.width, self.map.frame.size.height)];
         _imageView.backgroundColor = [UIColor clearColor];
-        _imageView.layer.borderWidth = 2;
+        _imageView.layer.borderWidth = 4;
         _imageView.layer.borderColor = [UIColor orangeColor].CGColor;
         _imageView.userInteractionEnabled = YES;
         _imageView.delegate =self;
@@ -97,8 +99,17 @@
 {
     [super loadView];
     
-    self.navigationController.navigationBarHidden = YES;
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = YES;
+    if (self.leftButton) {
+        self.leftButton.hidden = NO;
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -168,11 +179,15 @@
                                                                action:@selector(flipAction:)];
     
     UIButton* lintButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [lintButton setTitle:@"地图" forState:UIControlStateNormal];
-    lintButton.frame = CGRectMake(0, 0, 60, 40);
+    [lintButton setBackgroundImage:[UIImage imageNamed:@"button.png"] forState:UIControlStateNormal];
+    [lintButton setTitle:@"画图" forState:UIControlStateNormal];
+    [lintButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    lintButton.frame = CGRectMake(0, 20, 60, 40);
     self.leftButton = lintButton;
 	[lintButton addTarget:self action:@selector(drawSwitchAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:lintButton];
+//    [self.view addSubview:lintButton];
+   BreadcrumbAppDelegate* dele = [UIApplication sharedApplication].delegate;
+    [dele.window addSubview:lintButton];
 //	UIBarButtonItem *lintButtonItem = [[UIBarButtonItem alloc] initWithCustomView:lintButton];
 //	self.navigationItem.leftBarButtonItem = lintButtonItem;
     
@@ -187,6 +202,12 @@
     [self setZuishao:nil];
     [self setZuilao:nil];
     [self setZuixin:nil];
+    [self setPrice:nil];
+    [self setLotfangyuan:nil];
+    [self setLittlefangyuan:nil];
+    [self setGuiprice:nil];
+    [self setZhangfuda:nil];
+    [self setZhangfuxiao:nil];
     [super viewDidUnload];
 }
 - (void)dealloc
@@ -206,14 +227,17 @@
     if (!self.drawEnable) {
         [self.imageView removeFromSuperview];
         self.imageView = nil;
-        [button setTitle:@"地图" forState:UIControlStateNormal];
+        [button setTitle:@"画图" forState:UIControlStateNormal];
     } else {
         [self imageView];
-        [button setTitle:@"画图" forState:UIControlStateNormal];
+        [button setTitle:@"地图" forState:UIControlStateNormal];
     }
     if (self.drawEnable) {
         [self.map removeOverlay:self.crumbs];
         [self.map removeOverlay:self.polygon];
+        [self.map removeOverlay:self.polyline];
+        self.polyline = nil;
+        self.polygon = nil;
         NSMutableArray *anns = [self.map.annotations mutableCopy];
         [anns removeObject:self.map.userLocation];
         [self.map removeAnnotations:anns];
@@ -231,14 +255,16 @@
         CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(), [UIColor blueColor].CGColor);
         
         CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 4);
-        
-        CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0.0, 0.0, 1.0, 0.5); //画笔颜色
+
+        CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 60.0f/255, 130/255.0f, 4/255.0f, 0.55f); //画笔颜色
     }
 }
 #pragma mark - Actions
 
 // called when the app is moved to the background (user presses the home button) or to the foreground 
 //
+
+
 - (void)switchToBackgroundMode:(BOOL)background
 {
     if (background)
@@ -346,10 +372,10 @@
                 // This is the first time we're getting a location update, so create
                 // the CrumbPath and add it to the map.
                 //
-                _crumbs = [[CrumbPath alloc] initWithCenterCoordinate:newLocation.coordinate];
-                [self.map addOverlay:self.crumbs];
-                
-                // On the first location update only, zoom map to user location
+//                _crumbs = [[CrumbPath alloc] initWithCenterCoordinate:newLocation.coordinate];
+//                [self.map addOverlay:self.crumbs];
+//                
+//                // On the first location update only, zoom map to user location
                 MKCoordinateRegion region = 
 					MKCoordinateRegionMakeWithDistance(newLocation.coordinate, 2000, 2000);
                 [self.map setRegion:region animated:YES];
@@ -376,7 +402,7 @@
                     CGFloat lineWidth = MKRoadWidthAtZoomScale(currentZoomScale);
                     updateRect = MKMapRectInset(updateRect, -lineWidth, -lineWidth);
                     // Ask the overlay view to update just the changed area.
-                    [self.crumbView setNeedsDisplayInMapRect:updateRect];
+//                    [self.crumbView setNeedsDisplayInMapRect:updateRect];
                 }
             }
         }
@@ -385,38 +411,35 @@
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
 {
-    if (self.crumbView == nil)
-    {
-        _crumbView = [[CrumbPathView alloc] initWithOverlay:overlay];
-//        if (_crumbView.path != nil) {
-//            CGPathRef strokePath = _crumbView.path;
-//            
-//            UIBezierPath *path = [UIBezierPath bezierPathWithCGPath:strokePath];
-//            CGPathRef cgPathSelectionRect = CGPathCreateCopyByStrokingPath(path.CGPath, NULL, path.lineWidth, path.lineCapStyle, path.lineJoinStyle, path.miterLimit);
-//            UIBezierPath *selectionRect = [UIBezierPath bezierPathWithCGPath:cgPathSelectionRect];
-//            
-//            CGFloat dashStyle[] = { 5.0f, 5.0f };
-//            [selectionRect setLineDash:dashStyle count:2 phase:0];
-//            [[UIColor blackColor] setStroke];
-//            [selectionRect stroke];
-//
-//        }
-        return self.crumbView;
-
-    }else if ([overlay isKindOfClass:MKPolygon.class]) {
-        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
-        if (!delegate.isBiHe) {
-            return nil;
-        }
-        MKPolygonView *polygonView = [[MKPolygonView alloc] initWithOverlay:overlay];
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        
+        MKPolylineView *polylineView = [[MKPolylineView alloc] initWithOverlay:overlay];
         //        polygonView.strokeColor = [UIColor magentaColor];
-        polygonView.fillColor = [UIColor colorWithRed:0.0f green:0.0f blue:1.0f alpha:0.2f];
+        polylineView.strokeColor = [UIColor colorWithRed:60/255.0f green:130/255.0f blue:4/255.0f alpha:0.35f];
+
+        polylineView.lineWidth = 120;
+        return polylineView;
+        
+    } else if ([overlay isKindOfClass:MKPolygon.class]) {
+        MKPolygonView *polygonView = [[MKPolygonView alloc] initWithOverlay:overlay];
+        polygonView.strokeColor = [UIColor colorWithRed:60/255.0f green:130/255.0f blue:4/255.0f alpha:0.55f];
+        polygonView.lineWidth = 16;
+        polygonView.fillColor = [UIColor colorWithRed:60/255.0f green:130/255.0f blue:4/255.0f alpha:0.35f];
         
         return polygonView;
+    } else if ([overlay isKindOfClass:[CrumbPath class]]) {
+        self.crumbView = [[CrumbPathView alloc] initWithOverlay:overlay];
+        return self.crumbView;
     }
+    
     return nil;
 }
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    
 
+
+}
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
     
@@ -455,7 +478,7 @@
 //        
 //    }
     MKPinAnnotationView *newAnnotation = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"annotation1"];
-	newAnnotation.pinColor = MKPinAnnotationColorRed;
+	newAnnotation.pinColor = MKPinAnnotationColorGreen;
 	newAnnotation.animatesDrop = NO;
 	//canShowCallout: to display the callout view by touch the pin
 	newAnnotation.canShowCallout=YES;
@@ -467,9 +490,49 @@
 	return newAnnotation;
 
 }
-- (void)checkButtonTapped:(id)sender  event:(id)event{
-    
 
+- (IBAction)tanchu:(id)sender
+{
+    NSString *str;
+    UIButton *button = (UIButton*)sender;
+    switch (button.tag) {
+        case 0:
+            str = [self.dic objectForKey:@"min_price"];
+            break;
+        case 1:
+            str = [self.dic objectForKey:@"max_propCount"];
+            break;
+        case 2:
+            str = [self.dic objectForKey:@"max_sale_price_change"];
+            break;
+        case 3:
+            str = [self.dic objectForKey:@"max_price"];
+            break;
+        case 4:
+            str = [self.dic objectForKey:@"min_propCount"];
+            break;
+        case 5:
+            str = [self.dic objectForKey:@"min_sale_price_change"];
+            break;
+            
+        default:
+            break;
+    }
+    for (BigMapAnnotation *ann in self.map.annotations){
+        if (![ann isKindOfClass:[MKUserLocation class]]) {
+            if ([ann.commId isEqualToString:str]) {
+                [self.map selectAnnotation:ann animated:YES];
+            }
+        }
+
+    }
+   
+}
+
+- (void)checkButtonTapped:(id)sender  event:(id)event{
+    self.leftButton.hidden = YES;
+    CommViewController *comm = [[CommViewController alloc] init];
+    [self.navigationController pushViewController:comm animated:YES];
     
     
 }
@@ -565,7 +628,6 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     NSLog(@"touchesEnded");
     if ([self.mutableArraryLat count] > 0) {
         self.crumbs = nil;
-        [self CalculatingTheDistance];
         [self DrawingLineOnMap];
     }else{
         return;
@@ -576,10 +638,10 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     if (!self.drawEnable) {
         [self.imageView removeFromSuperview];
         self.imageView = nil;
-        [self.leftButton setTitle:@"地图" forState:UIControlStateNormal];
+        [self.leftButton setTitle:@"画图" forState:UIControlStateNormal];
     } else {
         [self imageView];
-        [self.leftButton setTitle:@"画图" forState:UIControlStateNormal];
+        [self.leftButton setTitle:@"地图" forState:UIControlStateNormal];
     }
     
     [self requestErShouFang];
@@ -605,16 +667,10 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
         
         if ([[resultDic objectForKey:@"status"] isEqualToString:@"ok"]) {
             
-
-            
             if ([[resultDic objectForKey:@"communities"] isKindOfClass:[NSArray class]]) {
                 NSArray *xiaoquArray = [resultDic objectForKey:@"communities"];
                 if ([xiaoquArray count] == 0) {
-                    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"
-                                                                 message:@"所画区域没有小区"
-                                                                delegate:nil
-                                                       cancelButtonTitle:@"确定"
-                                                       otherButtonTitles:nil,nil];
+                    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"  message:@"所画区域没有小区" delegate:nil cancelButtonTitle:@"确定"  otherButtonTitles:nil,nil];
                     [av show];
                     return;
                 }
@@ -633,6 +689,7 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
                                                     [xiaoquInfo objectForKey:@"lat"],@"commLat",
                                                     [xiaoquInfo objectForKey:@"lng"],@"commLng",
                                                     [xiaoquInfo objectForKey:@"address"],@"address",
+                                                    [xiaoquInfo objectForKey:@"sale_price_change"],@"sale_price_change",
                                                     nil]];
                     }
                 }
@@ -640,99 +697,160 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
                 NSLog(@"--[arrary count]----====%d",[arrary count]);
 
                 if ([arrary count] == 0) {
-                    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"
-                                                                 message:@"所画区域没有小区"
-                                                                delegate:nil
-                                                       cancelButtonTitle:@"确定"
-                                                       otherButtonTitles:nil,nil];
+                    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息" message:@"所画区域没有小区" delegate:nil cancelButtonTitle:@"确定"  otherButtonTitles:nil,nil];
                     [av show];
+                    return;
                 }
-                //添加标点
-                for (NSDictionary *dicCommunity in arrary) {
-                    NSString *commId = [dicCommunity objectForKey:@"commId"];
-                    NSString *commName = [dicCommunity objectForKey:@"commName"];
-                    NSString *commPrice = [dicCommunity objectForKey:@"commPrice"];
-                    NSString *commProps = [dicCommunity objectForKey:@"propCount"];
-                    NSString *commAddress = [dicCommunity objectForKey:@"address"];
-                    CLLocationDegrees commLat = [[dicCommunity objectForKey:@"commLat"] doubleValue];
-                    CLLocationDegrees commLng = [[dicCommunity objectForKey:@"commLng"] doubleValue];
-                    CLLocationCoordinate2D location;
-                    location.latitude = commLat;
-                    location.longitude = commLng;
-                    BigMapAnnotation *annotation = [[BigMapAnnotation alloc] initWithCoor:location];
-                    annotation.title = commName;
-                    annotation.commId = commId;
-                    annotation.commName = commName;
-                    annotation.propCount = commProps;
-                    annotation.commPrice = commPrice;
-                    annotation.commAddress = commAddress;
-                    annotation.isSelected = NO;
-                    annotation.isOldSelected = NO;
-                    //添加
-                    [self.map addAnnotation:annotation];
-                    
-                }
-                
-                
+                [self tianjiabianzhu:arrary];
+                [self shuaixuan:arrary];
+
                 
             }
             else{
-                UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"
-                                                             message:@"非常抱歉，获取数据失败"
-                                                            delegate:nil
-                                                   cancelButtonTitle:@"确定"
-                                                   otherButtonTitles:nil,nil];
+                UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息" message:@"非常抱歉，获取数据失败" delegate:nil  cancelButtonTitle:@"确定"  otherButtonTitles:nil,nil];
                 [av show];
             }
         }
-        else
-        {
-                        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"
-                                                                     message:@"非常抱歉，获取数据失败"
-                                                                    delegate:nil
-                                                           cancelButtonTitle:@"确定"
-                                                           otherButtonTitles:nil,nil];
-                        [av show];
+        else{
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息" message:@"非常抱歉，获取数据失败" delegate:nil  cancelButtonTitle:@"确定"  otherButtonTitles:nil,nil];
+            [av show];
         }
     }
     else {
-               UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息"
-                                                             message:@"网络不给力"
-                                                            delegate:nil
-                                                   cancelButtonTitle:@"确定"
-                                                   otherButtonTitles:nil,nil];
-                [av show];
-       
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示信息" message:@"网络不给力" delegate:nil  cancelButtonTitle:@"确定"  otherButtonTitles:nil,nil];
+        [av show];
     }
 
 }
+- (void)tianjiabianzhu:(NSArray*)arrary
+{
+    //添加标点
+    for (NSDictionary *dicCommunity in arrary) {
+        NSString *commId = [dicCommunity objectForKey:@"commId"];
+        NSString *commName = [dicCommunity objectForKey:@"commName"];
+        NSString *commPrice = [dicCommunity objectForKey:@"commPrice"];
+        NSString *commProps = [dicCommunity objectForKey:@"propCount"];
+        NSString *commAddress = [dicCommunity objectForKey:@"address"];
+        CLLocationDegrees commLat = [[dicCommunity objectForKey:@"commLat"] doubleValue];
+        CLLocationDegrees commLng = [[dicCommunity objectForKey:@"commLng"] doubleValue];
+        CLLocationCoordinate2D location;
+        location.latitude = commLat;
+        location.longitude = commLng;
+        BigMapAnnotation *annotation = [[BigMapAnnotation alloc] initWithCoor:location];
+        annotation.title = commName;
+        annotation.commId = commId;
+        annotation.commName = commName;
+        annotation.propCount = commProps;
+        annotation.commPrice = commPrice;
+        annotation.commAddress = commAddress;
+        annotation.isSelected = NO;
+        annotation.isOldSelected = NO;
+        //添加
+        [self.map addAnnotation:annotation];
+        
+    }
+}
+- (void)shuaixuan:(NSArray*)arrary
+{
+
+    int min_price;
+    int max_price;
+    int min_propCount;
+    int max_propCount;
+    float min_sale_price_change;
+    float max_sale_price_change;
+
+
+    for (NSUInteger i = 0; i < [arrary count]; i++) {
+        NSDictionary *dicCommunity = [arrary objectAtIndex:i];
+            
+        NSString *commPrice = [dicCommunity objectForKey:@"commPrice"];
+        if (i == 0) {
+            min_price = [commPrice intValue];
+            max_price = [commPrice intValue];
+        }
+        
+        min_price = [commPrice intValue] < min_price ? [commPrice intValue] : min_price;
+        max_price = [commPrice intValue] > max_price ? [commPrice intValue] : max_price;
+        
+        NSString *commpropCount = [dicCommunity objectForKey:@"propCount"];
+        if (i == 0) {
+            min_propCount = [commpropCount intValue];
+            max_propCount = [commpropCount intValue];
+        }
+        
+        min_propCount = [commpropCount intValue] < min_propCount ? [commpropCount intValue] : min_propCount;
+        max_propCount = [commpropCount intValue] > max_propCount ? [commpropCount intValue] : max_propCount;
+        NSString *sale_price_change = [dicCommunity objectForKey:@"sale_price_change"];
+        if (i == 0) {
+            min_sale_price_change = [sale_price_change floatValue];
+            max_sale_price_change = [sale_price_change floatValue];
+        }
+        
+        min_sale_price_change = [sale_price_change floatValue] < min_sale_price_change ? [sale_price_change floatValue]: min_sale_price_change;
+        max_sale_price_change = [sale_price_change floatValue] > max_sale_price_change ? [sale_price_change floatValue] : max_sale_price_change;
+        
+        
+    }
+
+    
+
+    self.zhangfuda.text = [NSString stringWithFormat:@"%0.3f%@",max_sale_price_change,@"%"];
+    self.zhangfuxiao.text = [NSString stringWithFormat:@"%0.3f%@",min_sale_price_change,@"%"];
+    
+
+    self.lotfangyuan.text = [NSString stringWithFormat:@"%d套",max_propCount];
+    self.littlefangyuan.text = [NSString stringWithFormat:@"%d套",min_propCount];
+    
+
+    self.price.text = [NSString stringWithFormat:@"%0.2f万",min_price/10000.0f];
+    self.guiprice.text = [NSString stringWithFormat:@"%0.2f万",max_price/10000.0f];
+    
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] initWithCapacity:0];
+    for (NSUInteger i = 0; i < [arrary count]; i++) {
+        NSDictionary *dicCommunity = [arrary objectAtIndex:i];
+                
+        NSString *commPrice = [dicCommunity objectForKey:@"commPrice"];
+        NSString *commpropCount = [dicCommunity objectForKey:@"propCount"];        
+        NSString *sale_price_change = [dicCommunity objectForKey:@"sale_price_change"];
+        if ([commPrice intValue] == max_price) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"max_price"];
+        }
+        if ([commPrice intValue] == min_price) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"min_price"];
+        }
+        if ([commpropCount intValue] == min_propCount) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"min_propCount"];
+        }
+        if ([commpropCount intValue] == max_propCount) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"max_propCount"];
+        }
+        if ([sale_price_change floatValue] == min_sale_price_change) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"min_sale_price_change"];
+        }
+        if ([sale_price_change floatValue] == max_sale_price_change) {
+            [dic setObject:[dicCommunity objectForKey:@"commId"] forKey:@"max_sale_price_change"];
+        }
+    }
+    self.dic = dic;
+}
 - (NSDictionary *)getLatAndLng
 {
-    float lat1 ;
-    float lng1 ;
     float min_lat;
     float max_lat;
     float min_lng;
     float max_lng;
+    
     for (NSUInteger i = 0; i < [self.mutableArraryLat count]; i++) {
-        
         float lat = [[self.mutableArraryLat objectAtIndex:i] floatValue];
         NSLog(@"%f",lat);
         if (i == 0) {
+            max_lat = lat;
             min_lat = lat;
         }
-        if (lat1 > lat) {
-            if (lat1 > max_lat) {
-                max_lat = lat1;
-            }
-            
-        }else{
-            if (lat <  min_lat) {
-                min_lat = lat;
-            }
-            
-        }
-        lat1 = lat;
+
+        min_lat = lat < min_lat ? lat : min_lat;
+        max_lat = lat > max_lat ? lat : max_lat;
     }
     for (NSUInteger i = 0; i < [self.mutableArraryLog count]; i++) {
         
@@ -740,32 +858,20 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
         NSLog(@"%f",lng);
         if (i == 0) {
             min_lng = lng;
+            max_lng = lng;
         }
-        if (lng1 > lng) {
-            if (lng1 > max_lng) {
-                max_lng = lng1;
-            }
-            
-        }else{
-            if (lng <  min_lng) {
-                min_lng = lng;
-            }
-            
-        }
-        lng1 = lng;
+        max_lng = lng > max_lng ? lng : max_lng;
+        min_lng = lng < min_lng ? lng : min_lng;
     }
+    
     NSLog(@"%f ---------  %f ",min_lat,max_lat);
     NSLog(@"%f ---------  %f ",min_lng,max_lng);
-    self.min_lng = min_lng;
-    self.min_lat = min_lat;
-    self.max_lng = max_lng;
-    self.max_lat = max_lat;
-    
+
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            [NSString stringWithFormat:@"%f",min_lat-0.05],@"min_lat",
-                            [NSString stringWithFormat:@"%f",min_lng-0.05],@"min_lng",
-                            [NSString stringWithFormat:@"%f",max_lat+0.05],@"max_lat",
-                            [NSString stringWithFormat:@"%f",max_lng+0.05],@"max_lng",
+                            [NSString stringWithFormat:@"%f",min_lat],@"min_lat",
+                            [NSString stringWithFormat:@"%f",min_lng],@"min_lng",
+                            [NSString stringWithFormat:@"%f",max_lat],@"max_lat",
+                            [NSString stringWithFormat:@"%f",max_lng],@"max_lng",
                             @"google",@"map_type",
                             @"1",@"page",
                             @"200",@"page_size",
@@ -774,8 +880,9 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     return params;
 
 }
+
 #pragma mark - 处理map画线事件
-- (void)CalculatingTheDistance
+- (CGFloat)CalculatingTheDistance
 {
     float min_lat ;
     float min_lng ;
@@ -798,43 +905,52 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     
     
     distance  = [self distanceFromPointX:[self.map convertCoordinate:min toPointToView:self.imageView] distanceToPointY:[self.map convertCoordinate:max toPointToView:self.imageView]];
-    NSLog(@"Distance is %f",distance);
-    
-    if (distance < 50) {
-        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
-        delegate.isBiHe = YES;
-        self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat lastObject] floatValue], [[self.mutableArraryLog lastObject] floatValue])];
-    }else{
-        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
-        delegate.isBiHe = NO;
-        self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat objectAtIndex:0] floatValue], [[self.mutableArraryLog objectAtIndex:0] floatValue])];
-    }
 
+    NSLog(@"Distance is %f",distance);
+
+    return distance;
+    
+////    if (distance < 50) {
+//        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
+//        delegate.isBiHe = YES;
+//        self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat lastObject] floatValue], [[self.mutableArraryLog lastObject] floatValue])];
+////    }else{
+////        BreadcrumbAppDelegate *delegate = [UIApplication sharedApplication].delegate;
+////        delegate.isBiHe = NO;
+////        self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat objectAtIndex:0] floatValue], [[self.mutableArraryLog objectAtIndex:0] floatValue])];
+////    }
+//
 }
 - (void)DrawingLineOnMap
 {
+    CGFloat distance = [self CalculatingTheDistance];
     MKMapRect updateRect;
     
     int boundaryPointsCount = self.mutableArraryLat.count;
     CLLocationCoordinate2D *boundary = malloc(sizeof(CLLocationCoordinate2D)*boundaryPointsCount);
     
+    self.crumbs = [[CrumbPath alloc] initWithCenterCoordinate:CLLocationCoordinate2DMake([[self.mutableArraryLat objectAtIndex:0] floatValue], [[self.mutableArraryLog objectAtIndex:0] floatValue])];
     for (NSUInteger i = 0; i < [self.mutableArraryLat count]; i++) {
         
         float lat = [[self.mutableArraryLat objectAtIndex:i] floatValue];
         float lng = [[self.mutableArraryLog objectAtIndex:i] floatValue];
         CLLocationCoordinate2D newCoordinate = CLLocationCoordinate2DMake(lat, lng);
         updateRect = [self.crumbs addCoordinate:newCoordinate];
-//        [self.crumbView setNeedsDisplayInMapRect:updateRect];
-         boundary[i] = CLLocationCoordinate2DMake(lat,lng);
+        //        [self.crumbView setNeedsDisplayInMapRect:updateRect];
+        boundary[i] = CLLocationCoordinate2DMake(lat,lng);
     }
-    
-    self.crumbView = nil;
-    [self.map addOverlay:self.crumbs];
-    
-    MKPolygon *polygon = [MKPolygon polygonWithCoordinates:boundary
-                                                     count:boundaryPointsCount];
-    self.polygon = polygon;
-    [self.map addOverlay:polygon];
+
+    if (distance > 70) {    // polyline
+        self.polyline = [MKPolyline polylineWithCoordinates:boundary
+                                                         count:boundaryPointsCount];
+        [self.map addOverlay:self.polyline];
+        self.crumbView = nil;
+        [self.map addOverlay:self.crumbs];        
+    } else {                // polygon
+        self.polygon = [MKPolygon polygonWithCoordinates:boundary
+                                                         count:boundaryPointsCount];
+        [self.map addOverlay:self.polygon];
+    }
 
 }
 
@@ -856,13 +972,38 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
 }
 
 -(BOOL)pointInsideOverlay:(CLLocationCoordinate2D )tapPoint
-{    
-    MKPolygonView *polygonView = (MKPolygonView *)[self.map viewForOverlay:self.polygon];
-    
-    MKMapPoint mapPoint = MKMapPointForCoordinate(tapPoint);    
-    CGPoint polygonViewPoint = [polygonView pointForMapPoint:mapPoint];
-    
-    return CGPathContainsPoint(polygonView.path, NULL, polygonViewPoint, NO);
+{
+    if (self.polygon) {
+        MKPolygonView *polygonView = (MKPolygonView *)[self.map viewForOverlay:self.polygon];
+        
+        MKMapPoint mapPoint = MKMapPointForCoordinate(tapPoint);    
+        CGPoint polygonViewPoint = [polygonView pointForMapPoint:mapPoint];
+        
+        return CGPathContainsPoint(polygonView.path, NULL, polygonViewPoint, NO);
+    } else {
+        
+        CGPoint newCenter = [self.map convertCoordinate:tapPoint toPointToView:self.map];
+        
+        for (NSUInteger i = 0; i < [self.mutableArraryLat count]; i++) {
+            
+            float lat = [[self.mutableArraryLat objectAtIndex:i] floatValue];
+            float lng = [[self.mutableArraryLog objectAtIndex:i] floatValue];
+            CLLocationCoordinate2D newCoordinate = CLLocationCoordinate2DMake(lat, lng);
+            CGPoint newPoint = [self.map convertCoordinate:newCoordinate toPointToView:self.map];
+            float distance ;
+            distance = [self distanceFromPointX:newCenter distanceToPointY:newPoint];
+            if (distance < 60) {
+                MKPolylineView *polylineView = (MKPolylineView *)[self.map viewForOverlay:self.polyline];
+                
+                MKMapPoint mapPoint = MKMapPointForCoordinate(tapPoint);
+                CGPoint polylineViewPoint = [polylineView pointForMapPoint:mapPoint];
+                
+                return CGPathContainsPoint(polylineView.path, NULL, polylineViewPoint, NO);
+            }return NO;
+        }
+        
+        return NO;
+    }
 }
 
 @end

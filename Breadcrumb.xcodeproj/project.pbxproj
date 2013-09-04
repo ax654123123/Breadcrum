@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E0F199617D71A8D00F30B99 /* CommViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F199417D71A8D00F30B99 /* CommViewController.m */; };
+		0E0F199717D71A8D00F30B99 /* CommViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0E0F199517D71A8D00F30B99 /* CommViewController.xib */; };
+		0E0F199A17D7212600F30B99 /* button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0F199917D7212600F30B99 /* button@2x.png */; };
+		0E0F199C17D7213E00F30B99 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E0F199B17D7213E00F30B99 /* button.png */; };
 		0E52C62E17D5E1EB00F8D16D /* BigMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E52C62D17D5E1EB00F8D16D /* BigMapAnnotation.m */; };
 		0E52C63217D5E42400F8D16D /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E52C63117D5E42400F8D16D /* UIUtil.m */; };
 		0E5998E417D08E3400F590DD /* DrawLinesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5998E317D08E3400F590DD /* DrawLinesView.m */; };
@@ -70,6 +74,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E0F199317D71A8D00F30B99 /* CommViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommViewController.h; sourceTree = "<group>"; };
+		0E0F199417D71A8D00F30B99 /* CommViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommViewController.m; sourceTree = "<group>"; };
+		0E0F199517D71A8D00F30B99 /* CommViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommViewController.xib; sourceTree = "<group>"; };
+		0E0F199917D7212600F30B99 /* button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "button@2x.png"; sourceTree = "<group>"; };
+		0E0F199B17D7213E00F30B99 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
 		0E52C62C17D5E1EB00F8D16D /* BigMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigMapAnnotation.h; sourceTree = "<group>"; };
 		0E52C62D17D5E1EB00F8D16D /* BigMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BigMapAnnotation.m; sourceTree = "<group>"; };
 		0E52C63017D5E42400F8D16D /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
@@ -176,6 +185,9 @@
 				1D3623250D0F684500981E51 /* BreadcrumbAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* BreadcrumbViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* BreadcrumbViewController.m */,
+				0E0F199317D71A8D00F30B99 /* CommViewController.h */,
+				0E0F199417D71A8D00F30B99 /* CommViewController.m */,
+				0E0F199517D71A8D00F30B99 /* CommViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -273,6 +285,8 @@
 		53025D4511DD5352007F367B /* images */ = {
 			isa = PBXGroup;
 			children = (
+				0E0F199B17D7213E00F30B99 /* button.png */,
+				0E0F199917D7212600F30B99 /* button@2x.png */,
 				537E51211635D7FD003EA7BA /* Default-568h@2x.png */,
 				537E51221635D7FD003EA7BA /* Default.png */,
 				537E51231635D7FD003EA7BA /* Default@2x.png */,
@@ -370,6 +384,9 @@
 				537E51241635D7FD003EA7BA /* Default-568h@2x.png in Resources */,
 				537E51251635D7FD003EA7BA /* Default.png in Resources */,
 				537E51261635D7FD003EA7BA /* Default@2x.png in Resources */,
+				0E0F199717D71A8D00F30B99 /* CommViewController.xib in Resources */,
+				0E0F199A17D7212600F30B99 /* button@2x.png in Resources */,
+				0E0F199C17D7213E00F30B99 /* button.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +406,7 @@
 				0E5998EB17D090F300F590DD /* MKMapView+ZoomLevel.m in Sources */,
 				0E52C62E17D5E1EB00F8D16D /* BigMapAnnotation.m in Sources */,
 				0E52C63217D5E42400F8D16D /* UIUtil.m in Sources */,
+				0E0F199617D71A8D00F30B99 /* CommViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

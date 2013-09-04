@@ -21,3 +21,5 @@
 
 //Screen Size
 #define CGRect_FULLSCREEN [[UIScreen mainScreen] bounds]
+
+#define POLYLINE_COLOR [UIColor colorWithRed:70/255.0f green:180/255.0f blue:21/255.0f alpha:0.3f]

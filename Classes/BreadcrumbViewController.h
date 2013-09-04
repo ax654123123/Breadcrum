@@ -56,13 +56,21 @@ Copyright (C) 2012 Apple Inc. All Rights Reserved.
 #import "DrawLinesView.h"
 @interface BreadcrumbViewController : UIViewController
             <MKMapViewDelegate, CLLocationManagerDelegate, AVAudioPlayerDelegate,touchDelegate>
+@property (nonatomic,strong) NSMutableDictionary *dic;
 @property (weak, nonatomic) IBOutlet UILabel *zuixin;
-
 @property (weak, nonatomic) IBOutlet UILabel *zuidi;
 @property (weak, nonatomic) IBOutlet UILabel *zuigui;
 @property (weak, nonatomic) IBOutlet UILabel *zuiduo;
 @property (weak, nonatomic) IBOutlet UILabel *zuishao;
 @property (weak, nonatomic) IBOutlet UILabel *zuilao;
+@property (weak, nonatomic) IBOutlet UILabel *price;
+@property (weak, nonatomic) IBOutlet UILabel *lotfangyuan;
+@property (weak, nonatomic) IBOutlet UILabel *guiprice;
+@property (weak, nonatomic) IBOutlet UILabel *zhangfuda;
+@property (weak, nonatomic) IBOutlet UILabel *zhangfuxiao;
+
+@property (weak, nonatomic) IBOutlet UILabel *littlefangyuan;
+
 - (void)switchToBackgroundMode:(BOOL)background;
 
 @end
