@@ -55,4 +55,6 @@
 
 }
 
+@property (nonatomic, assign) CGPathRef path;
+
 @end

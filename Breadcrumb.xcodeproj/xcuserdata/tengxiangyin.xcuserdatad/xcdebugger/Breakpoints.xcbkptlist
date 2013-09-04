@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/BreadcrumbViewController.m"
-         timestampString = "399896518.516666"
+         timestampString = "399954455.396543"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "550"
-         endingLineNumber = "550"
+         startingLineNumber = "563"
+         endingLineNumber = "563"
          landmarkName = "-touchEnded:withEvent:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -47,11 +47,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/BreadcrumbViewController.m"
-         timestampString = "399896518.516666"
+         timestampString = "399954455.396543"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "583"
-         endingLineNumber = "583"
+         startingLineNumber = "596"
+         endingLineNumber = "596"
          landmarkName = "-searchXiaoQuFinished:"
          landmarkType = "5">
       </FileBreakpoint>

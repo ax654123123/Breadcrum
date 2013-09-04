@@ -74,7 +74,7 @@
     MKMapRect clipRect = MKMapRectInset(mapRect, -lineWidth, -lineWidth);
     
     [crumbs lockForReading];
-    CGPathRef path = [self newPathForPoints:crumbs.points
+    _path = [self newPathForPoints:crumbs.points
                                     pointCount:crumbs.pointCount
                                       clipRect:clipRect
                                      zoomScale:zoomScale];
@@ -84,9 +84,9 @@
                                    zoomScale:zoomScale];
     [crumbs unlockForReading];
     
-    if (path != nil)
+    if (_path != nil)
     {
-        CGContextAddPath(context, path);
+        CGContextAddPath(context, _path);
         
         CGContextSetRGBStrokeColor(context, 0.0f, 0.0f, 1.0f, 0.5f);
         CGContextSetLineJoin(context, kCGLineJoinRound);
@@ -94,7 +94,7 @@
         CGContextSetLineWidth(context, lineWidth*3);
         CGContextSetRGBFillColor(context, 0.0f, 1.0f, 1.0f, 0.2f);
         CGContextStrokePath(context);  
-        CGPathRelease(path);
+        CGPathRelease(_path);
     }
 
     if (path1 != nil)

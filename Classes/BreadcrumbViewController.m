@@ -388,6 +388,19 @@
     if (self.crumbView == nil)
     {
         _crumbView = [[CrumbPathView alloc] initWithOverlay:overlay];
+//        if (_crumbView.path != nil) {
+//            CGPathRef strokePath = _crumbView.path;
+//            
+//            UIBezierPath *path = [UIBezierPath bezierPathWithCGPath:strokePath];
+//            CGPathRef cgPathSelectionRect = CGPathCreateCopyByStrokingPath(path.CGPath, NULL, path.lineWidth, path.lineCapStyle, path.lineJoinStyle, path.miterLimit);
+//            UIBezierPath *selectionRect = [UIBezierPath bezierPathWithCGPath:cgPathSelectionRect];
+//            
+//            CGFloat dashStyle[] = { 5.0f, 5.0f };
+//            [selectionRect setLineDash:dashStyle count:2 phase:0];
+//            [[UIColor blackColor] setStroke];
+//            [selectionRect stroke];
+//
+//        }
         return self.crumbView;
 
     }else if ([overlay isKindOfClass:MKPolygon.class]) {
@@ -611,7 +624,7 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
                     float lng;
                    lat = [[xiaoquInfo objectForKey:@"lat"] floatValue];
                    lng = [[xiaoquInfo objectForKey:@"lng"] floatValue];
-                    if (lat > self.min_lat - 0.001  && lng < self.max_lng +0.001  && lat < self.max_lat +0.001  && lng > self.min_lng -0.001 ) {
+                    if ([self pointInsideOverlay:CLLocationCoordinate2DMake(lat, lng)]) {
                         [arrary addObject:[NSDictionary dictionaryWithObjectsAndKeys:
                                                     [xiaoquInfo objectForKey:@"id"],@"commId",
                                                     [xiaoquInfo objectForKey:@"name"],@"commName",
@@ -622,10 +635,6 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
                                                     [xiaoquInfo objectForKey:@"address"],@"address",
                                                     nil]];
                     }
-                    
-                   
-
-                    
                 }
                 
                 NSLog(@"--[arrary count]----====%d",[arrary count]);
@@ -828,6 +837,7 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     [self.map addOverlay:polygon];
 
 }
+
 - (float)distanceFromPointX:(CGPoint)start distanceToPointY:(CGPoint)end
 {
     
@@ -844,4 +854,15 @@ static void interruptionListener(void *inClientData, UInt32 inInterruption)
     return distance;
     
 }
+
+-(BOOL)pointInsideOverlay:(CLLocationCoordinate2D )tapPoint
+{    
+    MKPolygonView *polygonView = (MKPolygonView *)[self.map viewForOverlay:self.polygon];
+    
+    MKMapPoint mapPoint = MKMapPointForCoordinate(tapPoint);    
+    CGPoint polygonViewPoint = [polygonView pointForMapPoint:mapPoint];
+    
+    return CGPathContainsPoint(polygonView.path, NULL, polygonViewPoint, NO);
+}
+
 @end
